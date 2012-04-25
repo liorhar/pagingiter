@@ -6,9 +6,7 @@ import org.jmock.Mockery;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import sun.net.idn.StringPrep;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,7 +40,7 @@ public class PagingIterableTest {
             oneOf(pagesProvider).fetchPage(1); will(returnIterator());
         }});
         Iterable<String> iterable = new PagingIterable<String>(pagesProvider);
-        assertItarableEquals(new String[] {}, iterable);
+        assertItarableEquals(new String[]{}, iterable);
     }
     @Test
     public void testOnePageIterator(){

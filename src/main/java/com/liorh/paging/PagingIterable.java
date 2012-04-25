@@ -9,7 +9,8 @@ import java.util.Iterator;
  * User: liorharel
  * Date: 4/24/12
  * Time: 10:43 PM
- * To change this template use File | Settings | File Templates.
+ * Iterator over paging provider, PagesProvider will be asked to fetch pages
+ * until an iterator over empty collection is returned
  */
 public class PagingIterable<T> implements Iterable<T> {
     private final PagesProvider<T> pageProvider;

@@ -7,9 +7,13 @@ import java.util.Iterator;
  * User: liorharel
  * Date: 4/24/12
  * Time: 10:46 PM
- * To change this template use File | Settings | File Templates.
- */
+ * Abstraction over paging services
+ * */
 public interface PagesProvider<T> {
-
+    /**
+     * should fetch next page
+     * @param page - page ordinal, starts at 1
+     * @return - iterator over the page elements
+     */
     Iterator<T> fetchPage(int page);
 }

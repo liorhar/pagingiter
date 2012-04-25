@@ -6,6 +6,7 @@ import org.jmock.Mockery;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import sun.net.idn.StringPrep;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +42,7 @@ public class PagingIterableTest {
             oneOf(pagesProvider).fetchPage(1); will(returnIterator());
         }});
         Iterable<String> iterable = new PagingIterable<String>(pagesProvider);
-        assertEquals(new ArrayList<String>(), Lists.newArrayList(iterable));
+        assertItarableEquals(new String[] {}, iterable);
     }
     @Test
     public void testOnePageIterator(){
@@ -53,23 +54,57 @@ public class PagingIterableTest {
         }});
 
         Iterable<String> iterable = new PagingIterable<String>(pagesProvider);
-        List<String> results = Lists.newArrayList(iterable);
-        assertEquals(Arrays.asList(new String[]{"one", "two"}), results);
+        assertItarableEquals(new String[] {"one", "two"}, iterable);
     }
     @Test
-        public void testTwoPagesIterator(){
+    public void testTwoPagesIterator(){
 
-            context.checking(new Expectations(){{
-                oneOf(pagesProvider).fetchPage(1); will(returnIterator("one", "two"));
-                oneOf(pagesProvider).fetchPage(2); will(returnIterator("three"));
-                oneOf(pagesProvider).fetchPage(3); will(returnIterator());
+        context.checking(new Expectations(){{
+            oneOf(pagesProvider).fetchPage(1); will(returnIterator("one", "two"));
+            oneOf(pagesProvider).fetchPage(2); will(returnIterator("three"));
+            oneOf(pagesProvider).fetchPage(3); will(returnIterator());
 
-            }});
+        }});
 
-            Iterable<String> iterable = new PagingIterable<String>(pagesProvider);
-            List<String> results = Lists.newArrayList(iterable);
-            assertEquals(Arrays.asList(new String[]{"one", "two", "three"}), results);
-        }
+        Iterable<String> iterable = new PagingIterable<String>(pagesProvider);
+        assertItarableEquals(new String[] {"one", "two", "three"}, iterable);
+    }
 
+    @Test
+    public void testFixedPageSizeIteratorOfOnePage(){
+        context.checking(new Expectations(){{
+            oneOf(pagesProvider).fetchPage(1); will(returnIterator("one", "two"));
+        }});
+
+        Iterable<String> iterable = new FixedPagingIterable<String>(pagesProvider,3);
+        assertItarableEquals(new String[] {"one", "two"}, iterable);
+    }
+
+    @Test
+    public void testFixedPageSizeIteratorOfTwoPages(){
+        context.checking(new Expectations(){{
+            oneOf(pagesProvider).fetchPage(1); will(returnIterator("one", "two"));
+            oneOf(pagesProvider).fetchPage(2); will(returnIterator("three"));
+        }});
+
+        Iterable<String> iterable = new FixedPagingIterable<String>(pagesProvider,2);
+        assertItarableEquals(new String[] {"one", "two", "three"}, iterable);
+    }
+
+    @Test
+    public void testFixedPageSizeIteratorOfOneExactPage(){
+        context.checking(new Expectations(){{
+            oneOf(pagesProvider).fetchPage(1); will(returnIterator("one", "two"));
+            oneOf(pagesProvider).fetchPage(2); will(returnIterator());
+        }});
+
+        Iterable<String> iterable = new FixedPagingIterable<String>(pagesProvider,2);
+        assertItarableEquals(new String[] {"one", "two"}, iterable);
+    }
+
+    private void assertItarableEquals(String[] expected, Iterable<String> iterable) {
+        List<String> results = Lists.newArrayList(iterable);
+        assertEquals(Arrays.asList(expected), results);
+    }
 
 }
